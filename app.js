@@ -15,15 +15,20 @@ phantom.create([], {
 })
 .then(page => {
 	
+	/*
+     * https://caolan.github.io/async/
+	*/
 	var keywords=["百度","淘宝","银行","一元"];
 	var promisses=Promise.map(keywords, function(keyword) {
 		console.log(keyword);
 		return new Promise(function (resolve, reject) {
 			var value=urlencode(keyword);
-			page.open('http://tool.chinaz.com/kwevaluate?kw='+value).then(function(status){
+			page.open('http://tool.chinaz.com/kwevaluate?kw='+value)
+			.then(function(status){
 				console.log(status);
 				if(status === "success")
 				{
+					page.render(keyword+'example.png');
 					page.evaluate(function() {
 					    return $("#site1").text();
 					}).then(function(text){
@@ -33,13 +38,17 @@ phantom.create([], {
 					});
 				}
 			}).catch(function (e) {
+				console.log("ffffff",e);
+				page.render(keyword+'example.png');
 				reject(e);
-				console.log(e);
 			});
 		});
 	}
-	, {concurrency: 1}
+	, {concurrency: 4}
 	);
+
+
+
 	
 	promisses.then(function(result) {
 		console.log(result);
